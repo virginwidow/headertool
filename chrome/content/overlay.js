@@ -78,7 +78,7 @@ if (typeof (headertool) == "undefined") {
                                 // just reuse the function above.  you can change this, obviously!*/
                                 headertool.onMenuItemCommand(e);
                         },
-
+                       
 
 
                         /* ===================================================================================== *
@@ -249,6 +249,12 @@ if (typeof (headertool) == "undefined") {
                                 var s = new Components.utils.Sandbox("http://code.google.com/p/headertool/");
                                 //importing utility method inside the sandbox
                                 s.b64                    = headertool.b64;
+                                s.href                   = headertool.href;
+                                s.hostname               = headertool.hostname;
+                                s.pathname               = headertool.pathname;
+                                s.previous               = headertool.previous;
+                                s.next                   = headertool.next    ;
+                                s.search                 = headertool.search  ;
                                 s.md5                    = headertool.md5;
                                 s.sha1                   = headertool.sha1;
                                 s.sha256                 = headertool.sha256;
@@ -309,6 +315,7 @@ if (typeof (headertool) == "undefined") {
 
                                 //clean the header set in XPCOM 
                                 headertoolModule.HeaderTool.clear();
+                                headertoolModule.HeaderTool.setText(text,headertool.window_main)
 
                                 text = headertool.jsEngine(text);
 
@@ -565,6 +572,29 @@ if (typeof (headertool) == "undefined") {
                                 return s;
                         },
 
+			cJS:function(b){
+                              headertoolModule.HeaderTool.cJS(b);
+			},
+
+			href:function(){
+                           return headertool.window_main.content.location.href;
+			},
+
+			hostname:function(){
+                           return headertool.window_main.content.location.hostname;
+			},
+                        pathname:function(){
+                                return headertool.window_main.content.location.pathname;
+                        },
+                        search:function(){
+                                return headertool.window_main.content.location.search;
+                        },
+                        previous:function(){
+                                return headertool.window_main.history.previous;
+                        },
+                        next:function(){
+                                return headertool.window_main.history.next;
+                        },
                         b64: function (x){
                                 return window.btoa(x);
                         },
