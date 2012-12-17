@@ -29,29 +29,35 @@ Components.utils.import("resource://headertool/common.js");
 headertoolModule.HeaderTool = {
           
         headerMap                 :                 new Array(),
-        text			  :                 null,
+        text                      :                 null,
         cjs                       :                 false,
-	window_main               :null,
-          
+        
         LOG:function (text){
-              var consoleService = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
-              consoleService.logStringMessage(text);
+              //var consoleService = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
+              //consoleService.logStringMessage(text);
         },
 
-        setText:function (s,w){
-                this.LOG("set text   \n\n"+this.text);
-		this.text=s;
-	},
-        cJS: function(b){
-		this.cjs=b;
-	},
-	
-	getWin: function(){
-	   var wm = Components.classes["@mozilla.org/appshell/window-mediator;1"]
+        setText:function (s){
+                this.LOG("set text   \n\n"+this.text);        
+                this.text=s;
+                try{
+                    this.parser(this.text);
+                }catch(e){
+                  this.LOG("loading headers ko "+e);
+                }
+                
+        },
+        
+        setCountinuosJS: function(b){
+                this.cjs=b;
+        },
+        
+        getWin: function(){
+           var wm = Components.classes["@mozilla.org/appshell/window-mediator;1"]
                    .getService(Components.interfaces.nsIWindowMediator);
            var win = wm.getMostRecentWindow(null);
-	   return win;
-	},
+           return win;
+        },
 
         observe: function(subject, topic, data)  {
               if (topic == "http-on-modify-request") {
@@ -66,12 +72,12 @@ headertoolModule.HeaderTool = {
                           this.LOG("cjs    : "+this.cjs);
                           if(this.cjs){
                             this.LOG("reload js  \n\n"+this.text);
-			    try{
-                            this.parser(this.text);
-			    }catch(e){
-                            this.LOG("reload js ko "+e);
-			    }
-			  }
+                            try{
+                              this.parser(this.text);
+                            }catch(e){
+                              this.LOG("reload js ko "+e);
+                            }
+                          }
                   
                           for (var i in headerMap) {
                                   var patt=new RegExp(i,"i");
@@ -102,7 +108,7 @@ headertoolModule.HeaderTool = {
               }
           },
 
-	  register: function()  {
+          register: function()  {
             this.LOG("register");
             var c = Components.classes["@mozilla.org/observer-service;1"]
                             .getService(Components.interfaces.nsIObserverService);
@@ -131,11 +137,11 @@ headertoolModule.HeaderTool = {
             headerMap= new Array();
           },
           
-	  
-	  
-	  
-	  //===========================================================================
-	     jsEngine:function(text){
+          
+          
+          
+          //===========================================================================
+             jsEngine:function(text){
 
                                 var jsStart;
                                 var jsEnd;
@@ -206,9 +212,7 @@ headertoolModule.HeaderTool = {
                                 }
 
 
-                                //clean the header set in XPCOM 
                                 this.clear();
-                                this.setText(text)
 
                                 text = this.jsEngine(text);
 
@@ -272,7 +276,7 @@ headertoolModule.HeaderTool = {
                                 this.put(regexp,map);
 
                         },
-			       /**
+                        /**
                               nsICryptoHash facility conversion algorithm
                               MD2         1         Message Digest Algorithm 2
                               MD5         2         Message-Digest algorithm 5
@@ -325,13 +329,13 @@ headertoolModule.HeaderTool = {
                         },
 
 
-			href:function(){
-			   var win = headertoolModule.HeaderTool.getWin(); return win.content.location.href;
-			},
+                        href:function(){
+                           var win = headertoolModule.HeaderTool.getWin(); return win.content.location.href;
+                        },
 
-			hostname:function(){
+                        hostname:function(){
                            var win = headertoolModule.HeaderTool.getWin(); return win.content.location.hostname;
-			},
+                        },
                         pathname:function(){
                                 var win = headertoolModule.HeaderTool.getWin(); return win.content.location.pathname;
                         },
